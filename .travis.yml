@@ -1,0 +1,22 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t shaunhare/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true shaunhare/react-test npm test
+
+after_success:
+    - docker build -t shaunhare/multi-client ./client
+    - docker build -t shaunhare/multi-nginx ./nginx
+    - docker build -t shaunhare/multi-server ./server
+    - docker build -t shaunhare/multi-worker ./worker
+    # Log in to the docker CLI
+    #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    # Take those images and push them to docker hub
+    #- docker push shaunhare/multi-client
+    #- docker push shaunhare/multi-nginx
+    #- docker push shaunhare/multi-server
+    #- docker push shaunhare/multi-worker
